@@ -1,0 +1,123 @@
+#!/usr/bin/env expect
+#
+# End-to-end test of the INVMNT inventory maintenance program (add,
+# view, delete, and the error paths), driven over a real 5250 session
+# via the ibmi-5250-telnet technique. Connection settings come from
+# .claude/config.exp at the repo root (gitignored, not duplicated here).
+#
+# Each check below reconnects fresh rather than chaining everything
+# into one long session -- see gotchas.md's "Session reliability: don't
+# over-chain actions in one connection". On this sandbox's telnet
+# gateway, 3+ round trips in a single session occasionally drops the
+# 5250 device entirely (observed: the job ends with CPF1358/CPC1197 --
+# a device disconnect, not an application error). Every proc below
+# does at most two round trips per connection, comfortably under that.
+#
+# Usage: tests/5250/test_invmnt.exp
+
+source [file join [file dirname [info script]] "../../.claude/config.exp"]
+source [file join [file dirname [info script]] "lib.exp"]
+source [file join [file dirname [info script]] "invmnt_procs.exp"]
+
+set ::pass_count 0
+set ::fail_count 0
+
+proc check {label condition} {
+    if {$condition} {
+        puts "PASS: $label"
+        incr ::pass_count
+    } else {
+        puts "FAIL: $label"
+        incr ::fail_count
+    }
+}
+
+# Runs body (which should call open_invmnt itself) in a fresh
+# connection, closing it afterward regardless of outcome.
+proc with_fresh_session {body} {
+    uplevel 1 $body
+    close_session
+}
+
+set ITEM     "TESTINV01"
+set MISSING  "NOSUCHITM"
+set DESC     "TEST WIDGET"
+set QTY      42
+
+# 0. Make the run idempotent: clear out any leftover record from a
+# prior (possibly failed) run before asserting anything.
+with_fresh_session {
+    open_invmnt
+    cleanup_item $ITEM
+}
+
+# 1. Add a new item.
+with_fresh_session {
+    open_invmnt
+    add_item $ITEM $DESC $QTY
+}
+puts "step: added $ITEM"
+
+# 2. Adding the same item again should be rejected.
+with_fresh_session {
+    open_invmnt
+    submit $ITEM F5
+    expect {
+        "ITEM ALREADY ON FILE" { check "duplicate add is rejected" 1 }
+        "Description" {
+            check "duplicate add is rejected" 0
+            press F12
+            expect {
+                "F3 End Job" { sleep 0.3 }
+                timeout { fail_hard "duplicate-add: did not return to the header screen after cancelling" }
+            }
+        }
+        timeout { fail_hard "duplicate-add: unexpected screen" }
+    }
+}
+
+# 3. View the item and confirm the data round-tripped.
+with_fresh_session {
+    open_invmnt
+    set screen [view_item $ITEM]
+}
+check "view shows the description" [string match "*$DESC*" $screen]
+check "view shows the quantity"    [string match "*0000042*" $screen]
+
+# 4. Start a delete but cancel it (F12) -- record must survive.
+with_fresh_session {
+    open_invmnt
+    delete_item $ITEM 0
+}
+
+with_fresh_session {
+    open_invmnt
+    set screen [view_item $ITEM]
+}
+check "cancelled delete leaves the record in place" [string match "*$DESC*" $screen]
+
+# 5. Delete for real (confirm with Enter) -- record must be gone.
+with_fresh_session {
+    open_invmnt
+    delete_item $ITEM 1
+}
+
+with_fresh_session {
+    open_invmnt
+    set screen [view_item $ITEM]
+}
+check "confirmed delete removes the record" [string match "*ITEM NOT ON FILE*" $screen]
+
+# 6. Viewing an item that was never added should also report not-found.
+with_fresh_session {
+    open_invmnt
+    set screen [view_item $MISSING]
+}
+check "viewing an unknown item reports not-found" [string match "*ITEM NOT ON FILE*" $screen]
+
+puts "----------------------------------------"
+puts "Results: $::pass_count passed, $::fail_count failed"
+if {$::fail_count > 0} {
+    exit 1
+}
+exit 0

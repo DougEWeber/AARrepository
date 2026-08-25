@@ -1,0 +1,37 @@
+---
+targets:
+  LIB1-INVMAINT-CMD :
+    objlib: LIB1
+    objname: INVMAINT
+    objtype: CMD
+    protected: no
+    excluded: no
+    requisites :
+      -
+        name: QCMDSRC
+        lib: "*LIBL"
+        objtype: "FILE"
+        member: INVMAINT
+      -
+        name: INVMNT
+        lib: "*LIBL"
+        objtype: "PGM"
+    requisiteyamlrecords :
+      - LIBL-QCMDSRC-SRCMBR-INVMAINT
+      - LIB1-INVMNT-PGM
+    command: CRTCMD
+    parameters:
+      - "CMD($(LIB1)/INVMAINT)"
+      - "PGM(INVMNT)"
+      - "SRCFILE(QCMDSRC)"
+      - "SRCMBR(INVMAINT)"
+      - "THDSAFE(*NO)"
+      - "MLTTHDACN(*SYSVAL)"
+      - "TEXT('Inventory Maintenance')"
+      - "CURLIB(*NOCHG)"
+      - "PRDLIB(*NOCHG)"
+  LIBL-QCMDSRC-SRCMBR-INVMAINT :
+    objlib: "*LIBL"
+    objname: QCMDSRC
+    objtype: SRCMBR
+    mbrname: INVMAINT

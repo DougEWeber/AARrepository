@@ -1,0 +1,79 @@
+     A*****************************************************************
+     A* FILE NAME:  INVMENU                                           *
+     A* RELATED PGMS:  INVMNT                                         *
+     A* RELATED FILES:  INVMSTL1   (LOGICAL FILE)                     *
+     A* DESCRIPTION:  THIS IS THE DISPLAY FILE INVMENU. IT HAS 3      *
+     A*           RECORD FORMATS.                                     *
+     A*****************************************************************
+     A                                      REF(INVMSTL1)
+     A                                      CHGINPDFT(CS)
+     A                                      PRINT(QSYSPRT)
+     A                                      INDARA
+     A          R HDRSCN
+     A                                      TEXT('PROMPT FOR ITEM ID')
+     A                                      CA03(03 'END MAINTENANCE')
+     A                                      CF05(05 'ADD MODE')
+     A                                      CF07(07 'DELETE MODE')
+     A                                      CF08(08 'DISPLAY MODE')
+     A            MODE           8A  O  1  4DSPATR(HI)
+     A                                  1 13'MODE'
+     A                                      DSPATR(HI)
+     A                                  2  4TIME
+     A                                      DSPATR(HI)
+     A                                  2 28'INVENTORY FILE MAINTENANCE'
+     A                                      DSPATR(HI RI)
+     A                                  2 70DATE
+     A                                      EDTCDE(Y)
+     A                                      DSPATR(HI)
+     A            ITEMID    R        I 10 25DSPATR(CS)
+     A  51                                  ERRMSG('ITEM ALREADY ON FILE' 51)
+     A  52                                  ERRMSG('ITEM NOT ON FILE' 52)
+     A                                 10 38'<--Enter Item Id'
+     A                                      DSPATR(HI)
+     A                                 23  4'F3 End Job'
+     A                                 23 21'F5 Add'
+     A                                 23 34'F7 Delete'
+     A                                 23 50'F8 Display'
+     A          R INVINQ                    TEXT('DISPLAY ITEM INFO')
+     A                                      CA12(12 'PREVIOUS SCREEN')
+     A            MODE           8A  O  1  4DSPATR(HI)
+     A                                  1 13'MODE'
+     A                                      DSPATR(HI)
+     A                                  2  4TIME
+     A                                      DSPATR(HI)
+     A                                  2 28'INVENTORY FILE MAINTENANCE'
+     A                                      DSPATR(HI)
+     A                                      DSPATR(RI)
+     A                                  2 70DATE
+     A                                      EDTCDE(Y)
+     A                                      DSPATR(HI)
+     A                                  4 14'Item Id:'
+     A                                      DSPATR(HI)
+     A                                      DSPATR(UL)
+     A            ITEMID    R        O  4 25DSPATR(HI)
+     A            DESC      R        O  6 25DSPATR(CS)
+     A            QTYOH     R        O  8 25DSPATR(CS)
+     A                                 23  2'F12 Cancel'
+     A            MODE1          8   O 23 13
+     A          R INVBLD                    TEXT('ADD INVENTORY RECORD')
+     A                                      CA12(12 'PREVIOUS SCREEN')
+     A            MODE           8   O  1  4DSPATR(HI)
+     A                                  1 13'MODE'
+     A                                      DSPATR(HI)
+     A                                  2  4TIME
+     A                                      DSPATR(HI)
+     A                                  2 28'INVENTORY FILE MAINTENANCE'
+     A                                      DSPATR(HI RI)
+     A                                  2 70DATE
+     A                                      EDTCDE(Y)
+     A                                      DSPATR(HI)
+     A                                  4 14'Item Id:'
+     A                                      DSPATR(HI UL)
+     A            ITEMID    R        O  4 25DSPATR(HI)
+     A                                  6 13'Description'
+     A                                      DSPATR(HI)
+     A            DESC      R        I  6 25
+     A                                  8 10'Qty On Hand'
+     A                                      DSPATR(HI)
+     A            QTYOH     R        I  8 25
+     A                                 23  2'F12 Cancel Addition'
