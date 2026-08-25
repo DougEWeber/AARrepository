@@ -13,18 +13,8 @@ targets:
         lib: "*LIBL"
         objtype: "FILE"
         member: INVMNT
-      -
-        name: INVMSTL1
-        lib: "*LIBL"
-        objtype: "FILE"
-      -
-        name: INVMENU
-        lib: "*LIBL"
-        objtype: "FILE"
     requisiteyamlrecords :
       - LIBL-QRPGLESRC-SRCMBR-INVMNT
-      - LIB1-INVMSTL1-FILE
-      - LIB1-INVMENU-FILE
     command: CRTBNDRPG
     parameters:
       - "PGM($(LIB1)/INVMNT)"
