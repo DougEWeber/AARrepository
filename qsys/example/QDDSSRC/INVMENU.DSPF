@@ -28,7 +28,7 @@
      A            ITEMID    R        I 10 25DSPATR(CS)
      A  51                                  ERRMSG('ITEM ALREADY ON FILE' 51)
      A  52                                  ERRMSG('ITEM NOT ON FILE' 52)
-     A                                 10 33'<--Enter Item Id'
+     A                                 10 38'<--Enter Item Id'
      A                                      DSPATR(HI)
      A                                 23  4'F3 End Job'
      A                                 23 21'F5 Add'
@@ -70,7 +70,7 @@
      A                                  4 14'Item Id:'
      A                                      DSPATR(HI UL)
      A            ITEMID    R        O  4 25DSPATR(HI)
-     A                                  6 17'Description'
+     A                                  6 13'Description'
      A                                      DSPATR(HI)
      A            DESC      R        I  6 25
      A                                  8 10'Qty On Hand'

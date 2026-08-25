@@ -1,0 +1,132 @@
+#!/usr/bin/env expect
+#
+# App-specific helpers for driving the INVMNT inventory maintenance
+# program (INVMAINT command) over a 5250 session. Built on lib.exp's
+# generic primitives -- see ../../SKILL.md (ibmi-5250-telnet) for the
+# underlying technique.
+#
+# Screen shapes (qsys/example/QDDSSRC/INVMENU.DSPF):
+#   HDRSCN  -- prompt for Item Id; F5 Add, F7 Delete, F8 Display, F3 Exit
+#   INVBLD  -- add screen: Item Id (echoed), Description (input),
+#              Qty On Hand (input, 7,0 -- no EDTCDE, so it displays with
+#              leading zeros; type it zero-padded per gotchas.md)
+#   INVINQ  -- view/delete screen: Item Id, Description, Qty On Hand,
+#              all plain output (no field labels on this one, unlike
+#              INVBLD -- matches the source app's CSTINQ style)
+
+# Sends a literal Tab. Not in lib.exp's PFKEY table (that's PF keys
+# only); this is the ordinary field-to-field navigation key.
+proc tab {} {
+    global spawn_id
+    send -- "\t"
+    sleep 0.15
+}
+
+proc open_invmnt {} {
+    open_app "INVMAINT" "INVENTORY FILE MAINTENANCE" $::LIB
+}
+
+# Adds an item. qtyoh is zero-padded to the field's full 7-digit
+# precision before typing, per gotchas.md's numeric-field note --
+# RPG initializes QTYOH to 0 before displaying INVBLD, and with no
+# EDTCDE that shows as a literal "0000000" rather than blanking.
+proc add_item {itemid desc qtyoh} {
+    global spawn_id timeout
+    submit $itemid F5
+    expect {
+        "ITEM ALREADY ON FILE" { fail_hard "add_item($itemid): unexpectedly already on file" }
+        "Description" { sleep 0.3 }
+        timeout { fail_hard "add_item($itemid): did not reach the add screen" }
+    }
+    type_field $desc
+    tab
+    type_field [format "%07d" $qtyoh]
+    enter
+    expect {
+        "ITEM ALREADY ON FILE" { fail_hard "add_item($itemid): file rejected the add" }
+        "F3 End Job" { sleep 0.3 }
+        timeout { fail_hard "add_item($itemid): did not return to the header screen after Enter" }
+    }
+}
+
+# Displays an item (F8) and returns the ANSI-stripped screen buffer
+# with the record on it, then returns to HDRSCN via Enter. Caller
+# checks the buffer for the expected description/qty text.
+proc view_item {itemid} {
+    global spawn_id timeout expect_out
+    submit $itemid F8
+    set screen ""
+    expect {
+        "ITEM NOT ON FILE" { return "ITEM NOT ON FILE" }
+        "Item Id:" { append screen $expect_out(buffer) }
+        timeout { fail_hard "view_item($itemid): did not reach the display screen" }
+    }
+    # "Item Id:" arrives before DESC/QTYOH in the stream, so the match
+    # above can truncate before they show up -- drain until quiet to
+    # capture the rest of the record before returning. Short local
+    # timeout: this is "wait for the tail of an already-arriving
+    # screen", not "wait for a new one".
+    set saved_timeout $timeout
+    set timeout 2
+    expect {
+        -re ".+" { append screen $expect_out(buffer) ; exp_continue }
+        timeout { }
+    }
+    set timeout $saved_timeout
+    set screen [strip_ansi $screen]
+    enter
+    expect {
+        "F3 End Job" { sleep 0.3 }
+        timeout { fail_hard "view_item($itemid): did not return to the header screen" }
+    }
+    return $screen
+}
+
+# Starts a delete (F7), and either confirms (Enter) or cancels (F12).
+proc delete_item {itemid confirm} {
+    global spawn_id timeout
+    submit $itemid F7
+    expect {
+        "ITEM NOT ON FILE" { fail_hard "delete_item($itemid): not found -- can't delete" }
+        "Item Id:" { sleep 0.3 }
+        timeout { fail_hard "delete_item($itemid): did not reach the delete confirmation screen" }
+    }
+    if {$confirm} {
+        enter
+    } else {
+        press F12
+    }
+    expect {
+        "F3 End Job" { sleep 0.3 }
+        timeout { fail_hard "delete_item($itemid): did not return to the header screen" }
+    }
+}
+
+# Deletes an item if it exists, tolerating "not found" -- for making a
+# test run idempotent regardless of leftover state from a prior
+# (possibly failed) run. Not built on delete_item: that proc treats
+# not-found as a hard failure, which is exactly the outcome this one
+# needs to accept quietly.
+proc cleanup_item {itemid} {
+    global spawn_id timeout
+    submit $itemid F7
+    expect {
+        "ITEM NOT ON FILE" { sleep 0.3 ; return }
+        "Item Id:"         { sleep 0.3 }
+        timeout            { fail_hard "cleanup_item($itemid): unexpected screen" }
+    }
+    enter
+    expect {
+        "F3 End Job" { sleep 0.3 }
+        timeout { fail_hard "cleanup_item($itemid): did not return to the header screen" }
+    }
+}
+
+proc exit_invmnt {} {
+    global spawn_id timeout
+    press F3
+    expect {
+        "===>" { sleep 0.3 }
+        timeout { fail_hard "exit_invmnt: did not return to the command line after F3" }
+    }
+}
