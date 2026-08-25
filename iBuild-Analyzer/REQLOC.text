@@ -1,0 +1,18 @@
+Requisite Location Report
+Summary report:
+AARLIVE objects:
+    Objects with requisites in library AARLIVE: 8
+    Objects with requisites in library AARLIVE: 8
+
+Detail report:
+AARLIVE objects:
+    Objects with requisites in library AARLIVE:
+        *FILE PF        AARLIVE/CUSMST                      
+        *FILE LF        AARLIVE/CUSMSTL1                    
+        *FILE LF        AARLIVE/CUSMSTL2                    
+        *FILE LF        AARLIVE/CUSMSTL3                    
+        *FILE DSPF      AARLIVE/MAINMENU                    
+        *FILE DSPF      AARLIVE/MNTMENU                     
+        *FILE DSPF      AARLIVE/SCHNAMD                     
+        *FILE DSPF      AARLIVE/SCHZIPD                     
+End of Requisite Location Report.

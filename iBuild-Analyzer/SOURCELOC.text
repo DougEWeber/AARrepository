@@ -1,0 +1,23 @@
+Source Location Report
+Summary report:
+AARLIVE objects:
+    Objects with source in library AARLIVE: 14
+
+Detail report:
+AARLIVE objects:
+    Objects with source in library AARLIVE:
+        *MODULE RPGLE   AARLIVE/CUSMAIN                     
+        *FILE DSPF      AARLIVE/MAINMENU                    
+        *MODULE RPGLE   AARLIVE/CUSMNT                      
+        *FILE LF        AARLIVE/CUSMSTL1                    
+        *FILE PF        AARLIVE/CUSMST                      
+        *FILE DSPF      AARLIVE/MNTMENU                     
+        *MODULE RPGLE   AARLIVE/SCHNAM                      
+        *FILE LF        AARLIVE/CUSMSTL3                    
+        *FILE DSPF      AARLIVE/SCHNAMD                     
+        *MODULE RPGLE   AARLIVE/SCHZIP                      
+        *FILE LF        AARLIVE/CUSMSTL2                    
+        *FILE DSPF      AARLIVE/SCHZIPD                     
+        *PGM RPGLE      AARLIVE/SCHNAMRPG                   
+        *CMD            AARLIVE/CUSTMAINT                   
+End of Source Location Report.
