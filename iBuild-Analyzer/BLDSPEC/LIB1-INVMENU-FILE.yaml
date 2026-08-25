@@ -1,0 +1,34 @@
+---
+targets:
+  LIB1-INVMENU-FILE :
+    objlib: LIB1
+    objname: INVMENU
+    objtype: FILE
+    objattr: DSPF
+    protected: no
+    excluded: no
+    requisites :
+      -
+        name: QDDSSRC
+        lib: "*LIBL"
+        objtype: "FILE"
+        member: INVMENU
+      -
+        name: INVMSTL1
+        lib: "*LIBL"
+        objtype: "FILE"
+    requisiteyamlrecords :
+      - LIBL-QDDSSRC-SRCMBR-INVMENU
+      - LIB1-INVMSTL1-FILE
+    command: EDOCRTOBJ
+    parameters:
+      - "BLDTGT($(LIB1)/INVMENU)"
+      - "OBJTYPE(*FILE)"
+      - "OBJATTR(DSPF)"
+      - "CMD(CRTDSPF)"
+      - "CMDPARMS(' FILE($(LIB1)/INVMENU) SRCFILE(QDDSSRC) SRCMBR(INVMENU) DFRWRT(*YES) RSTDSP(*NO) TEXT(''Inventory Maintenance Menu'')')"
+  LIBL-QDDSSRC-SRCMBR-INVMENU :
+    objlib: "*LIBL"
+    objname: QDDSSRC
+    objtype: SRCMBR
+    mbrname: INVMENU
