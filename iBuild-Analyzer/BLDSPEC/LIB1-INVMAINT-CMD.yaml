@@ -12,13 +12,8 @@ targets:
         lib: "*LIBL"
         objtype: "FILE"
         member: INVMAINT
-      -
-        name: INVMNT
-        lib: "*LIBL"
-        objtype: "PGM"
     requisiteyamlrecords :
       - LIBL-QCMDSRC-SRCMBR-INVMAINT
-      - LIB1-INVMNT-PGM
     command: CRTCMD
     parameters:
       - "CMD($(LIB1)/INVMAINT)"

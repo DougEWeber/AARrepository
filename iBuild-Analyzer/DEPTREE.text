@@ -24,6 +24,8 @@ Dependency Tree Report (*DEPTREE)
         *SRCMBR         *LIBL/QDDSSRC          (CUSMSTL2)
       *FILE DSPF      LIB1/SCHZIPD
         *SRCMBR         *LIBL/QDDSSRC          (SCHZIPD)
+  *PGM RPGLE      LIB1/INVMNT
+    *SRCMBR         *LIBL/QRPGLESRC          (INVMNT)
   *PGM RPGLE      LIB1/SCHNAMRPG
     *SRCMBR         *LIBL/QRPGLESRC          (SCHNAMRPG)
   *MODULE RPGLE   LIB1/CUSMAIN
@@ -68,6 +70,18 @@ Dependency Tree Report (*DEPTREE)
     *SRCMBR         *LIBL/QDDSSRC          (CUSMSTL3)
     *FILE PF        LIB1/CUSMST
       *SRCMBR         *LIBL/QDDSSRC          (CUSMST)
+  *FILE DSPF      LIB1/INVMENU
+    *SRCMBR         *LIBL/QDDSSRC          (INVMENU)
+    *FILE LF        LIB1/INVMSTL1
+      *SRCMBR         *LIBL/QDDSSRC          (INVMSTL1)
+      *FILE PF        LIB1/INVMST
+        *SRCMBR         *LIBL/QDDSSRC          (INVMST)
+  *FILE PF        LIB1/INVMST
+    *SRCMBR         *LIBL/QDDSSRC          (INVMST)
+  *FILE LF        LIB1/INVMSTL1
+    *SRCMBR         *LIBL/QDDSSRC          (INVMSTL1)
+    *FILE PF        LIB1/INVMST
+      *SRCMBR         *LIBL/QDDSSRC          (INVMST)
   *FILE DSPF      LIB1/MAINMENU
     *SRCMBR         *LIBL/QDDSSRC          (MAINMENU)
   *FILE DSPF      LIB1/MNTMENU
@@ -90,4 +104,6 @@ Dependency Tree Report (*DEPTREE)
         *SRCMBR         *LIBL/QDDSSRC          (CUSMST)
   *CMD            LIB1/CUSTMAINT
     *SRCMBR         *LIBL/QCMDSRC          (CUSTMAINT)
+  *CMD            LIB1/INVMAINT
+    *SRCMBR         *LIBL/QCMDSRC          (INVMAINT)
 End of Dependency Tree Report
